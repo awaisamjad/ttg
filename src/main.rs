@@ -5,7 +5,7 @@ const OR: (&str, &str) = ("v", "OR");
 #[derive(Debug)]
 enum OPERATION_ERROR {
     LENGTHS_NOT_EQUAL,
-    ZERO_LENGTH
+    ZERO_LENGTH,
 }
 
 #[repr(u8)]
@@ -25,10 +25,14 @@ impl std::fmt::Debug for Value {
 }
 
 trait OPERATIONS {
-    fn and(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
-
-    fn or(self, s2: Statement) -> Statement;
-    fn not(self) -> Statement;
+    fn and(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn or(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn not(self) -> Result<Statement, OPERATION_ERROR>;
+    fn xor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn xnor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn if_then(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn r#if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn if_and_only_if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
 }
 
 #[derive(Debug)]
@@ -43,12 +47,7 @@ impl Statement {
 }
 
 impl OPERATIONS for Statement {
-    fn and(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
-
-        if self.fields.len() == 0 || s2.fields.len() == 0 {
-            return Err(OPERATION_ERROR::ZERO_LENGTH);
-        }
-
+    fn and(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR> {
         if self.fields.len() != s2.fields.len() {
             return Err(OPERATION_ERROR::LENGTHS_NOT_EQUAL);
         }
@@ -69,7 +68,7 @@ impl OPERATIONS for Statement {
         })
     }
 
-    fn not(self) -> Self {
+    fn not(self) -> Result<Statement, OPERATION_ERROR> {
         let result_fields: Vec<Value> = self
             .fields
             .iter()
@@ -82,12 +81,44 @@ impl OPERATIONS for Statement {
             })
             .collect();
 
-        Statement {
+        Ok(Statement {
             fields: result_fields,
-        }
+        })
     }
 
-    fn or(self, s2: Statement) -> Statement {
+    fn or(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR> {
+        if self.fields.len() != s2.fields.len() {
+            return Err(OPERATION_ERROR::LENGTHS_NOT_EQUAL);
+        }
+
+        let result_fields = self
+            .fields
+            .iter()
+            .zip(&s2.fields)
+            .map(|(value1, value2)| match (value1, value2) {
+                (Value::FALSE, Value::FALSE) => Value::FALSE,
+                _ => Value::TRUE,
+            })
+            .collect();
+
+        Ok(Statement {
+            fields: result_fields,
+        })
+    }
+
+    fn xor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
+        todo!()
+    }
+    fn xnor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
+        todo!()
+    }
+    fn if_then(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
+        todo!()
+    }
+    fn r#if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
+        todo!()
+    }
+    fn if_and_only_if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
         todo!()
     }
 }
@@ -113,13 +144,13 @@ fn main() {
     };
 
     let p2 = Statement {
-        fields: vec![Value::TRUE, Value::FALSE, Value::TRUE, Value::FALSE, Value::TRUE],
+        fields: vec![Value::TRUE, Value::FALSE, Value::TRUE, Value::FALSE],
     };
 
-    let result = p1.and(p2);
+    let result = p1.and(&p2);
     match result {
         Ok(value) => println!("{:?}", value),
-        Err(err) => println!("{:?}. Check if statements have the same length", err)
+        Err(err) => println!("{:?}", err),
     }
     // let result = p1.not();
 
