@@ -1,11 +1,32 @@
-const AND: (&str, &str) = ("^", "AND");
+use std::io::Write;
 
+const AND: (&str, &str) = ("^", "AND");
 const OR: (&str, &str) = ("v", "OR");
 
+const QUIT_OPTIONS: [&str; 3] = ["quit", "exit", "q"];
+
+const HELP_MESSAGE : &str = "
+    This is `ttg` which stands for Truth Table Generator
+    Through the interactive shell, you can create logical statements, perform operations on them and other statements and generate truth tables
+
+    Enter the following to exit : quit | q | exit
+
+    Create a statement : NAME = [value1, value2 ...];
+        Example : p1 = [t,t,f,f];
+
+        Rules : 
+            1. Values can be as t/true and f/false only.
+                1. Case insensitive
+            2. Equals must be used
+            3. NAME MUST be mixture of letters and numbers
+                1. NO special characters except for underscore and hyphen (easier reading)
+            4. Line must end in semi colon or will continue to line break until finished
+";
+
 #[derive(Debug)]
-enum OPERATION_ERROR {
-    LENGTHS_NOT_EQUAL,
-    ZERO_LENGTH,
+enum OperationError {
+    LengthsNotEqual,
+    ZeroLength,
 }
 
 #[repr(u8)]
@@ -25,14 +46,14 @@ impl std::fmt::Debug for Value {
 }
 
 trait OPERATIONS {
-    fn and(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR>;
-    fn or(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR>;
-    fn not(self) -> Result<Statement, OPERATION_ERROR>;
-    fn xor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
-    fn xnor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
-    fn if_then(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
-    fn r#if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
-    fn if_and_only_if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR>;
+    fn and(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn or(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn not(self) -> Result<Statement, OperationError>;
+    fn xor(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn xnor(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn if_then(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn r#if(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn if_and_only_if(self, s2: &Statement) -> Result<Statement, OperationError>;
 }
 
 #[derive(Debug)]
@@ -40,16 +61,10 @@ struct Statement {
     fields: Vec<Value>,
 }
 
-impl Statement {
-    // fn iter(&self) -> impl Iterator<Item = &Value> {
-    //     vec![&self.x1, &self.x2, &self.x3, &self.x4].into_iter()
-    // }
-}
-
 impl OPERATIONS for Statement {
-    fn and(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR> {
+    fn and(self, s2: &Statement) -> Result<Statement, OperationError> {
         if self.fields.len() != s2.fields.len() {
-            return Err(OPERATION_ERROR::LENGTHS_NOT_EQUAL);
+            return Err(OperationError::LengthsNotEqual);
         }
 
         let mut result_fields = Vec::new();
@@ -68,7 +83,7 @@ impl OPERATIONS for Statement {
         })
     }
 
-    fn not(self) -> Result<Statement, OPERATION_ERROR> {
+    fn not(self) -> Result<Statement, OperationError> {
         let result_fields: Vec<Value> = self
             .fields
             .iter()
@@ -86,9 +101,9 @@ impl OPERATIONS for Statement {
         })
     }
 
-    fn or(self, s2: &Statement) -> Result<Statement, OPERATION_ERROR> {
+    fn or(self, s2: &Statement) -> Result<Statement, OperationError> {
         if self.fields.len() != s2.fields.len() {
-            return Err(OPERATION_ERROR::LENGTHS_NOT_EQUAL);
+            return Err(OperationError::LengthsNotEqual);
         }
 
         let result_fields = self
@@ -106,55 +121,280 @@ impl OPERATIONS for Statement {
         })
     }
 
-    fn xor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
-        todo!()
+    fn xor(self, s2: &Statement) -> Result<Statement, OperationError> {
+        if self.fields.len() != s2.fields.len() {
+            return Err(OperationError::LengthsNotEqual);
+        }
+
+        let result_fields = self
+            .fields
+            .iter()
+            .zip(&s2.fields)
+            .map(|(value1, value2)| match (value1, value2) {
+                (Value::FALSE, Value::FALSE) => Value::FALSE,
+                (Value::TRUE, Value::TRUE) => Value::FALSE,
+                _ => Value::TRUE,
+            })
+            .collect();
+
+        Ok(Statement {
+            fields: result_fields,
+        })
     }
-    fn xnor(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
-        todo!()
+
+    fn xnor(self, s2: &Statement) -> Result<Statement, OperationError> {
+        if self.fields.len() != s2.fields.len() {
+            return Err(OperationError::LengthsNotEqual);
+        }
+
+        let result_fields = self
+            .fields
+            .iter()
+            .zip(&s2.fields)
+            .map(|(value1, value2)| match (value1, value2) {
+                (Value::FALSE, Value::FALSE) => Value::TRUE,
+                (Value::TRUE, Value::TRUE) => Value::TRUE,
+                _ => Value::FALSE,
+            })
+            .collect();
+
+        Ok(Statement {
+            fields: result_fields,
+        })
     }
-    fn if_then(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
-        todo!()
+
+    fn if_then(self, s2: &Statement) -> Result<Statement, OperationError> {
+        if self.fields.len() != s2.fields.len() {
+            return Err(OperationError::LengthsNotEqual);
+        }
+
+        let result_fields = self
+            .fields
+            .iter()
+            .zip(&s2.fields)
+            .map(|(value1, value2)| match (value1, value2) {
+                (Value::TRUE, Value::FALSE) => Value::FALSE,
+                _ => Value::TRUE,
+            })
+            .collect();
+
+        Ok(Statement {
+            fields: result_fields,
+        })
     }
-    fn r#if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
-        todo!()
+
+    fn r#if(self, s2: &Statement) -> Result<Statement, OperationError> {
+        if self.fields.len() != s2.fields.len() {
+            return Err(OperationError::LengthsNotEqual);
+        }
+
+        let result_fields = self
+            .fields
+            .iter()
+            .zip(&s2.fields)
+            .map(|(value1, value2)| match (value1, value2) {
+                (Value::FALSE, Value::TRUE) => Value::FALSE,
+                _ => Value::TRUE,
+            })
+            .collect();
+
+        Ok(Statement {
+            fields: result_fields,
+        })
     }
-    fn if_and_only_if(self, s2: Statement) -> Result<Statement, OPERATION_ERROR> {
-        todo!()
+
+    fn if_and_only_if(self, s2: &Statement) -> Result<Statement, OperationError> {
+        if self.fields.len() != s2.fields.len() {
+            return Err(OperationError::LengthsNotEqual);
+        }
+
+        let result_fields = self
+            .fields
+            .iter()
+            .zip(&s2.fields)
+            .map(|(value1, value2)| match (value1, value2) {
+                (Value::FALSE, Value::FALSE) => Value::TRUE,
+                (Value::TRUE, Value::TRUE) => Value::TRUE,
+                _ => Value::FALSE,
+            })
+            .collect();
+
+        Ok(Statement {
+            fields: result_fields,
+        })
     }
 }
 
-//? allows indexing of a struct
-// impl std::ops::Index<usize> for Statement {
-//     type Output = Value;
-
-//     fn index(&self, index: usize) -> &Self::Output {
-//         match index {
-//             0 => &self.x1,
-//             1 => &self.x2,
-//             2 => &self.x3,
-//             3 => &self.x4,
-//             _ => panic!("Index out of bounds"),
-//         }
-//     }
-// }
-
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let p1 = Statement {
-        fields: vec![Value::TRUE, Value::TRUE, Value::FALSE, Value::FALSE],
+        fields: vec![
+            Value::TRUE,
+            Value::TRUE,
+            Value::FALSE,
+            Value::FALSE,
+            Value::TRUE,
+            Value::TRUE,
+            Value::FALSE,
+            Value::FALSE,
+            Value::TRUE,
+            Value::TRUE,
+            Value::FALSE,
+            Value::FALSE,
+        ],
     };
 
     let p2 = Statement {
-        fields: vec![Value::TRUE, Value::FALSE, Value::TRUE, Value::FALSE],
+        fields: vec![
+            Value::TRUE,
+            Value::FALSE,
+            Value::FALSE,
+            Value::TRUE,
+            Value::TRUE,
+            Value::FALSE,
+            Value::FALSE,
+            Value::TRUE,
+            Value::TRUE,
+            Value::FALSE,
+            Value::FALSE,
+        ],
     };
 
-    let result = p1.and(&p2);
-    match result {
-        Ok(value) => println!("{:?}", value),
-        Err(err) => println!("{:?}", err),
-    }
+    let result = p1.if_and_only_if(&p2);
+    // match result {
+    //     Ok(value) => println!("{:?}", value),
+    //     Err(err) => println!("{:?}", err),
+    // }
     // let result = p1.not();
 
     // for value in result.fields {
     //     println!("{:?}", value);
     // }
+
+    //TODO if user enters `ttg` then go to interactive shell, if they enter example:`ttg -s [t,t,f,f] --operation not` then give cli like experience
+
+    let mut buffer = String::new();
+    println!("TTG version 0.0.1");
+    println!("Enter `help` for instructions");
+
+    while {
+        print!("ttg> ");
+
+        std::io::stdout().flush()?; // Ensure the prompt is displayed immediately
+        buffer.clear();
+
+        std::io::stdin().read_line(&mut buffer)?;
+        let input = buffer.trim();
+
+        match input {
+            "help" => {
+                println!("{}", HELP_MESSAGE);
+                true
+            }
+            "man" => {
+                println!("man command");
+                true
+            }
+            _ if QUIT_OPTIONS.contains(&input) => {
+                println!("quitting program");
+                // TODO
+                // delete_file()
+                false
+            }
+            _ => {
+                if is_valid_operation(&input) {
+                    println!("valid operation");
+                    append_to_file("file.txt", &input)?;
+                    true
+                } else {
+                    //TODO show how to create valid operation here
+                    println!("invalid operation. check help");
+                    true
+                }
+            }
+        }
+    } {}
+
+    Ok(())
+}
+
+//? Check if the input is valid
+//? this includes the following : declaring a statement, performing an operation on a statement or multiple,
+//TODO functionality should probably be split up
+fn is_valid_operation(input: &str) -> bool {
+    //? check to see if line ends in semi-colon which is then removed so we deal only with NAME, =, VALUE
+    if !input.ends_with(";") {
+        println!("Missing semi-colon");
+        return false;
+    }
+
+    let input: String = input.replace(";", "");
+    let values: Vec<&str> = input.split_whitespace().collect();
+
+    if values.len() != 3 {
+        println!("Invalid input length");
+        return false;
+    }
+
+    if is_name_valid(values[0]) == false {
+        println!("Invalid Name");
+        return false;
+    }
+
+    if values[1].trim() != "=" {
+        println!("Invalid Operator");
+        return false;
+    }
+
+    if is_value_valid(values[2]) == false {
+        println!("Invalid Truth Values");
+        return false;
+    }
+
+    return true;
+}
+
+fn is_name_valid(name: &str) -> bool {
+    if name.len() < 1 || name.len() > 10 {
+        return false;
+    }
+
+    if !name.chars().all(|c| c.is_alphanumeric()) {
+        return false;
+    }
+
+    true
+}
+
+fn is_value_valid(value: &str) -> bool {
+    let allowed_truth_and_false_values = [
+        "t", "f", "truth", "false", "true", "false", "T", "F", "TRUTH", "FALSE", "TRUE", "FALSE",
+    ];
+
+    if !value.starts_with("[") && !value.ends_with("]") {
+        return false;
+    }
+
+    let value = value.replace("[", "").replace("]", "");
+    let value = value.split(",");
+
+    for v in value {
+        if !allowed_truth_and_false_values.contains(&v) {
+            println!("Invalid truth value: {}", v);
+            return false;
+        }
+    }
+    true
+}
+
+fn is_valid_statement(statement: &str) -> bool {
+    false
+}
+
+fn append_to_file(filename: &str, text: &str) -> std::io::Result<()> {
+    let mut file = std::fs::OpenOptions::new()
+        .append(true)
+        .create(true)
+        .open(filename)?;
+    writeln!(file, "{}", text)?;
+    Ok(())
 }

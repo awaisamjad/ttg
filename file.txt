@@ -1,0 +1,1 @@
+fhsdjka321 = [TRUTH,T,FALSE,F,t,f,truth,false];s1 = [true,false,true,false];
