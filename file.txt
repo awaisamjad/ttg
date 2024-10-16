@@ -1,1 +1,3 @@
-fhsdjka321 = [TRUTH,T,FALSE,F,t,f,truth,false];s1 = [true,false,true,false];
+s1 = [t, t, t];
+s2 = [f,t,f];
+s3 = [t,t,t,t];

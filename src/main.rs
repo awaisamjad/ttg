@@ -321,6 +321,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 //? this includes the following : declaring a statement, performing an operation on a statement or multiple,
 //TODO functionality should probably be split up
 fn is_valid_operation(input: &str) -> bool {
+
     //? check to see if line ends in semi-colon which is then removed so we deal only with NAME, =, VALUE
     if !input.ends_with(";") {
         println!("Missing semi-colon");
@@ -328,15 +329,14 @@ fn is_valid_operation(input: &str) -> bool {
     }
 
     let input: String = input.replace(";", "");
+
+    //? This is only done to ensure that "=" exists as its not checked in `.split("=")`
     let values: Vec<&str> = input.split_whitespace().collect();
 
-    if values.len() != 3 {
-        println!("Invalid input length");
-        return false;
-    }
-
-    if is_name_valid(values[0]) == false {
-        println!("Invalid Name");
+    //? This is done because there may be no whitespace so the split above doenst do anything
+    //? This leads to a length of 1 which shouldnt happen and interferes with checking for "="
+    if values.len() == 1 {
+        println!("Invalid Syntax. Ensure spacing");
         return false;
     }
 
@@ -345,12 +345,30 @@ fn is_valid_operation(input: &str) -> bool {
         return false;
     }
 
-    if is_value_valid(values[2]) == false {
+    //? Split by the '=' as it allows us to deal with both sides separately and we dont have to deal with whitespace
+    //? This doesnt ensure that "=" exists as you can split on a value that doesnt exist so the check is made previously
+    let values : Vec<&str> = input.split("=").collect();
+
+    if values.len() != 2 {
+        println!("Invalid input length");
+        return false;
+    }
+
+    let name = values[0].trim();
+    let values = values[1];
+
+    if is_name_valid(name) == false {
+        println!("Invalid Name");
+        return false;
+    }
+
+    if is_value_valid(values) == false {
         println!("Invalid Truth Values");
         return false;
     }
 
     return true;
+
 }
 
 fn is_name_valid(name: &str) -> bool {
@@ -378,7 +396,7 @@ fn is_value_valid(value: &str) -> bool {
     let value = value.split(",");
 
     for v in value {
-        if !allowed_truth_and_false_values.contains(&v) {
+        if !allowed_truth_and_false_values.contains(&v.trim()) {
             println!("Invalid truth value: {}", v);
             return false;
         }
