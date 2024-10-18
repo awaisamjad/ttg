@@ -1,11 +1,11 @@
+use std::env;
 use std::io::Write;
 mod constants;
+mod operations;
 mod repl;
 mod utils;
-mod operations;
 
 use crate::operations::operations::*;
-
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let p1 = Statement {
@@ -54,8 +54,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     //TODO if user enters `ttg` then go to interactive shell, if they enter example:`ttg -s [t,t,f,f] --operation not` then give cli like experience
 
+    let args: Vec<String> = env::args().collect();
 
-    let _ = repl::repl::new();
-
+    if args.len() != 1 {
+        println!("Using CLI");
+    } else {
+        let _ = repl::repl::new();
+    }
     Ok(())
 }

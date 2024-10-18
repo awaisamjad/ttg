@@ -1,4 +1,5 @@
 //? This file checks to see if the input provided by the repl is a valid statement
+//? Statements must follow the following syntax : NAME = [value1, value2, ...];
 
 pub fn is_valid(input: &str) -> bool {
     //? check to see if line ends in semi-colon which is then removed so we deal only with NAME, =, VALUE
@@ -46,7 +47,7 @@ pub fn is_valid(input: &str) -> bool {
         return false;
     }
 
-    return true;
+    true
 }
 
 fn is_name_valid(name: &str) -> bool {

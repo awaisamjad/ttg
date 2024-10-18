@@ -48,7 +48,8 @@ pub fn new() -> Result<(), Box<dyn std::error::Error>> {
                 false
             }
             _ => {
-                if statement::is_valid(&input) || operation::is_valid(&input) {
+                // ! Change && to ||
+                if statement::is_valid(&input) && operation::is_valid(&input) {
                     println!("valid operation");
                     append_to_file(OUTPUT_FILE, &input)?;
                     true
