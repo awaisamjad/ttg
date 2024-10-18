@@ -54,11 +54,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     //TODO if user enters `ttg` then go to interactive shell, if they enter example:`ttg -s [t,t,f,f] --operation not` then give cli like experience
 
-    let buffer = String::new();
-    println!("TTG version 0.0.1");
-    println!("Enter `help` for instructions");
 
-    let _ = repl::repl::new(buffer);
+    let _ = repl::repl::new();
 
     Ok(())
 }
