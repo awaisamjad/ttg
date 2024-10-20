@@ -51,9 +51,14 @@ pub fn is_valid(input: &str) -> bool {
 }
 
 fn is_name_valid(name: &str) -> bool {
+
+    // let disallowed_values = ("!", "^", "&", "|");
+
     if name.len() < 1 || name.len() > 10 {
         return false;
     }
+
+
 
     if !name.chars().all(|c| c.is_alphanumeric()) {
         return false;
@@ -81,4 +86,63 @@ fn is_value_valid(value: &str) -> bool {
         }
     }
     true
+}
+
+mod tests {
+    #[cfg(test)]
+    mod tests {
+        use crate::repl::statement::is_valid;
+
+        use super::*;
+
+        #[test]
+        fn test_valid_statement() {
+            assert!(is_valid("VAR1 = [true, false];"));
+            assert!(is_valid("VAR2 = [t, f];"));
+            assert!(is_valid("VAR3 = [T, F];"));
+            assert!(is_valid("VAR4 = [TRUE, FALSE];"));
+        }
+
+        #[test]
+        fn test_missing_semicolon() {
+            assert!(!is_valid("VAR1 = [true, false]"));
+        }
+
+        #[test]
+        fn test_invalid_operator() {
+            assert!(!is_valid("VAR1 == [true, false];"));
+            assert!(!is_valid("VAR1 : [true, false];"));
+        }
+
+        #[test]
+        fn test_invalid_name() {
+            // assert!(!is_valid("1VAR = [true, false];"));
+            assert!(!is_valid("VAR_NAME_TOO_LONG = [true, false];"));
+            assert!(!is_valid("VAR! = [true, false];"));
+        }
+
+        #[test]
+        fn test_invalid_value_syntax() {
+            assert!(!is_valid("VAR1 = true, false;"));
+            assert!(!is_valid("VAR1 = [true false];"));
+            assert!(!is_valid("VAR1 = [true, false"));
+        }
+
+        #[test]
+        fn test_invalid_truth_values() {
+            assert!(!is_valid("VAR1 = [yes, no];"));
+            assert!(!is_valid("VAR1 = [1, 0];"));
+            assert!(!is_valid("VAR1 = [TRUE, maybe];"));
+        }
+
+        #[test]
+        fn test_empty_name() {
+            assert!(!is_valid(" = [true, false];"));
+        }
+
+        #[test]
+        fn test_empty_value() {
+            assert!(!is_valid("VAR1 = [];"));
+        }
+    }
 }

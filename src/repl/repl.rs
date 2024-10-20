@@ -8,8 +8,6 @@ use crate::utils::append_to_file;
 pub fn new() -> Result<(), Box<dyn std::error::Error>> {
     while {
         let mut buffer = String::new();
-        println!("TTG version 0.0.1");
-        println!("Enter `help` for instructions");
         print!("ttg> ");
 
         std::io::stdout().flush()?; // Ensure the prompt is displayed immediately

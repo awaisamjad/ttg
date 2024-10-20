@@ -41,7 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ],
     };
 
-    let result = p1.if_and_only_if(&p2);
+    let result = p1.biconditional(&p2);
     // match result {
     //     Ok(value) => println!("{:?}", value),
     //     Err(err) => println!("{:?}", err),
@@ -53,6 +53,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // }
 
     //TODO if user enters `ttg` then go to interactive shell, if they enter example:`ttg -s [t,t,f,f] --operation not` then give cli like experience
+
+    println!("TTG version 0.0.1");
+    println!("Enter `help` for instructions");
 
     let args: Vec<String> = env::args().collect();
 

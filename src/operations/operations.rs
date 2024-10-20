@@ -14,19 +14,16 @@ impl std::fmt::Debug for Value {
     }
 }
 
-
 #[derive(Debug)]
 pub struct Statement {
     pub fields: Vec<Value>,
 }
-
 
 #[derive(Debug)]
 pub enum OperationError {
     LengthsNotEqual,
     ZeroLength,
 }
-
 
 pub trait OPERATIONS {
     fn and(self, s2: &Statement) -> Result<Statement, OperationError>;
@@ -36,9 +33,8 @@ pub trait OPERATIONS {
     fn xnor(self, s2: &Statement) -> Result<Statement, OperationError>;
     fn if_then(self, s2: &Statement) -> Result<Statement, OperationError>;
     fn r#if(self, s2: &Statement) -> Result<Statement, OperationError>;
-    fn if_and_only_if(self, s2: &Statement) -> Result<Statement, OperationError>;
+    fn biconditional(self, s2: &Statement) -> Result<Statement, OperationError>;
 }
-
 
 impl OPERATIONS for Statement {
     fn and(self, s2: &Statement) -> Result<Statement, OperationError> {
@@ -182,7 +178,7 @@ impl OPERATIONS for Statement {
         })
     }
 
-    fn if_and_only_if(self, s2: &Statement) -> Result<Statement, OperationError> {
+    fn biconditional(self, s2: &Statement) -> Result<Statement, OperationError> {
         if self.fields.len() != s2.fields.len() {
             return Err(OperationError::LengthsNotEqual);
         }

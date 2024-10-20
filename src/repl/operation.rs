@@ -1,9 +1,6 @@
 //? This file checks to see if the input provided by the repl is a valid operation
-//? Operations must follow one of the following syntax : p1.operation_name(p1); 
+//? Operations must follow one of the following syntax : p1.operation_name(p1);
 //?     p1 and p2 must be previously defined
-
-
-
 
 pub fn is_valid(input: &str) -> bool {
     //? check to see if line ends in semi-colon which is then removed so we deal only with NAME, =, VALUE

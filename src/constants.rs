@@ -1,5 +1,11 @@
-pub const AND: (&str, &str) = ("^", "AND");
-pub const OR: (&str, &str) = ("v", "OR");
+pub const AND: (&str, &str, &str, &str) = ("AND", "and", "^", "&");
+pub const OR: (&str, &str, &str, &str) = ("OR", "or", "v", "||");
+pub const NOT: (&str, &str, &str, &str) = ("NOT", "not", "¬", "!");
+pub const XOR: (&str, &str, &str) = ("XOR", "xor", "X");
+pub const XNOR: (&str, &str, &str, &str, &str) = ("XNOR", "xnor", "v", "¬X", "!X");
+pub const IMPLICATION: (&str, &str, &str, &str) = ("->", "=>", "?????", "?????");
+pub const BICONDITIONAL: (&str, &str, &str, &str) = ("<->", "<=>", "???????", "????????");
+
 pub const QUIT_OPTIONS: [&str; 3] = ["quit", "exit", "q"];
 pub const OUTPUT_FILE: &str = "file.txt";
 pub const HELP_MESSAGE: &str = "
@@ -25,14 +31,14 @@ pub const HELP_MESSAGE: &str = "
         5. Ensure there is a space between the NAME, '=', and VALUES.
 
     Operations:
-    - and: Logical AND operation.
     - or: Logical OR operation.
+    - and: Logical AND operation.
     - not: Logical NOT operation.
     - xor: Logical XOR operation.
     - xnor: Logical XNOR operation.
     - if_then: Logical implication (if-then).
     - if: Logical reverse implication.
-    - if_and_only_if: Logical biconditional (if and only if).
+    - biconditional: Logical biconditional (if and only if).
 
     Example Usage:
     - ttg> p1 = [t, t, f, f];
