@@ -1,5 +1,4 @@
 use std::env;
-use std::io::Write;
 mod constants;
 mod operations;
 mod repl;

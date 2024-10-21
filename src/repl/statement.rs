@@ -81,6 +81,7 @@ fn is_name_valid(name: &str) -> bool {
 
     true
 }
+
 fn is_value_valid(value: &str) -> bool {
     let allowed_true_and_false_values = [
         "t", "f", "true", "false", "T", "F", "TRUTH", "FALSE", "TRUE", "FALSE",

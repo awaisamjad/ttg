@@ -1,7 +1,7 @@
 //? Helpful utility functions
 
+use crate::constants::{OPERATION_FILE, STATEMENT_FILE};
 use std::io::Write;
-use crate::constants::{self, OPERATION_FILE, STATEMENT_FILE};
 
 pub fn append_to_file(filename: &str, text: &str) -> std::io::Result<()> {
     let mut file = std::fs::OpenOptions::new()
@@ -19,5 +19,4 @@ pub fn delete_files() {
     if let Err(e) = std::fs::remove_file(OPERATION_FILE) {
         eprintln!("Failed to delete {}: {}", OPERATION_FILE, e);
     }
-    
 }
