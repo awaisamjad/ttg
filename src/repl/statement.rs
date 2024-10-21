@@ -51,22 +51,36 @@ pub fn is_valid(input: &str) -> bool {
 }
 
 fn is_name_valid(name: &str) -> bool {
-
-    // let disallowed_values = ("!", "^", "&", "|");
-
-    if name.len() < 1 || name.len() > 10 {
+    // Check if the length is less than 20 characters
+    if name.len() < 1 || name.len() >= 20 {
         return false;
     }
 
+    // Check if the name starts with a number
+    if name.chars().next().unwrap().is_numeric() {
+        return false;
+    }
 
+    // Check if the name contains only alphanumeric characters, underscores, and hyphens
+    if !name
+        .chars()
+        .all(|c| c.is_alphanumeric() || c == '_' || c == '-')
+    {
+        return false;
+    }
 
-    if !name.chars().all(|c| c.is_alphanumeric()) {
+    // Check if the name ends with a hyphen or underscore
+    if name.ends_with('-') || name.ends_with('_') {
+        return false;
+    }
+
+    // Check if the name contains consecutive hyphens or underscores
+    if name.contains("--") || name.contains("__") {
         return false;
     }
 
     true
 }
-
 fn is_value_valid(value: &str) -> bool {
     let allowed_true_and_false_values = [
         "t", "f", "true", "false", "T", "F", "TRUTH", "FALSE", "TRUE", "FALSE",
@@ -116,9 +130,12 @@ mod tests {
 
         #[test]
         fn test_invalid_name() {
-            // assert!(!is_valid("1VAR = [true, false];"));
-            assert!(!is_valid("VAR_NAME_TOO_LONG = [true, false];"));
+            assert!(!is_valid("1VAR = [true, false];"));
+            assert!(!is_valid(
+                "VAR_NAME_TOO_LONG_VAR_NAME_TOO_LONG = [true, false];"
+            ));
             assert!(!is_valid("VAR! = [true, false];"));
+            assert!(!is_valid("VAR-- = [true, f];"))
         }
 
         #[test]

@@ -1,5 +1,13 @@
 # To Do
 
+## Checking validity of inputs
+- Is it possible to have a general set of syntax that is allowed for a statement, operation etc and see if the input fits the criteria/matches that syntax
+- Example for statement
+  - Syntax : NAME = [value1, value2, ...]
+- Example for operations
+  - Syntax 1 : NAME
+  - Syntax 2 : (OPERATION)NAME
+  - Syntax 3 : NAME OPERATION NAME
 ## Features
 - Equal testing
   - Could be done with PartialEq trait
@@ -22,7 +30,7 @@
 4. Line must end in semi colon or will continue to line break until finished
 
 ## Valid Operations
-OR : ∨ , |, OR, or 
+OR : v, |, OR, or 
 AND: ∧ , &, AND, and
 NOT: ¬ , !, NOT, not
 XOR : X, XOR, xor

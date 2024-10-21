@@ -7,7 +7,8 @@ pub const IMPLICATION: (&str, &str, &str, &str) = ("->", "=>", "?????", "?????")
 pub const BICONDITIONAL: (&str, &str, &str, &str) = ("<->", "<=>", "???????", "????????");
 
 pub const QUIT_OPTIONS: [&str; 3] = ["quit", "exit", "q"];
-pub const OUTPUT_FILE: &str = "file.txt";
+pub const STATEMENT_FILE: &str = "statement_file.txt";
+pub const OPERATION_FILE: &str = "operation_file.txt";
 pub const HELP_MESSAGE: &str = "
     Welcome to TTG (Truth Table Generator) v0.0.1!
 
