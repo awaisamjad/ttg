@@ -2,9 +2,9 @@ use crate::constants::{HELP_MESSAGE, OPERATION_FILE, QUIT_OPTIONS, STATEMENT_FIL
 use crate::repl::{operation, statement};
 use crate::utils::{append_to_file, delete_files};
 
+use rustyline::completion::Completer;
 use rustyline::config::Configurer;
 use rustyline::error::ReadlineError;
-use rustyline::completion::Completer;
 use rustyline::validate::Validator;
 use rustyline::{DefaultEditor, EditMode, Helper};
 
@@ -20,8 +20,7 @@ use rustyline::{DefaultEditor, EditMode, Helper};
 //     colored_prompt: String,
 // }
 
-pub fn new() -> Result<(), Box<dyn std::error::Error>> {
-
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = rustyline::Config::builder()
         .history_ignore_space(true)
         .completion_type(rustyline::CompletionType::List)
@@ -35,11 +34,17 @@ pub fn new() -> Result<(), Box<dyn std::error::Error>> {
     //     colored_prompt: "".to_owned(),
     //     validator: rustyline::validate::MatchingBracketValidator::new(),
     // };
-    let mut rl = rustyline::Editor::<(),rustyline::history::FileHistory>::with_config(config)?;
+    let mut rl = rustyline::Editor::<(), rustyline::history::FileHistory>::with_config(config)?;
     // rl.set_helper(Some(h));
     // let mut rl: rustyline::Editor<(), rustyline::history::FileHistory> = rustyline::DefaultEditor::new()?;
-    rl.bind_sequence(rustyline::KeyEvent::alt('n'), rustyline::Cmd::HistorySearchForward);
-    rl.bind_sequence(rustyline::KeyEvent::alt('p'), rustyline::Cmd::HistorySearchBackward);
+    rl.bind_sequence(
+        rustyline::KeyEvent::alt('n'),
+        rustyline::Cmd::HistorySearchForward,
+    );
+    rl.bind_sequence(
+        rustyline::KeyEvent::alt('p'),
+        rustyline::Cmd::HistorySearchBackward,
+    );
 
     if rl.load_history("history.txt").is_err() {
         println!("No previous history.");

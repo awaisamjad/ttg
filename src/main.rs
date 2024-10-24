@@ -1,9 +1,11 @@
 use std::env;
 mod constants;
+mod gui;
 mod operations;
 mod repl;
 mod utils;
 
+use crate::gui::gui as GUI;
 use crate::operations::operations::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -53,6 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     //TODO if user enters `ttg` then go to interactive shell, if they enter example:`ttg -s [t,t,f,f] --operation not` then give cli like experience
 
+    // GUI::main();
     println!("TTG version 0.0.1");
     println!("Enter `help` for instructions");
 
@@ -61,7 +64,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.len() != 1 {
         println!("Using CLI");
     } else {
-        let _ = repl::repl::new();
+        let _ = repl::repl::main();
     }
+
     Ok(())
 }

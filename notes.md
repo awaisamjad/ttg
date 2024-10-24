@@ -44,8 +44,8 @@ BICONDITIONAL : <->, <=>, ????????????
 - p1;
 
 #### Performing operation on single statement
-- ¬p1; 
-- !p1;
+- ¬ p1; 
+- ! p1;
 
 > Only includes NOT
 
